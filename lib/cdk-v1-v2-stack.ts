@@ -1,19 +1,29 @@
 import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-// import * as sqs from '@aws-cdk/aws-sqs';
+import * as ec2 from "@aws-cdk/aws-ec2";
+import * as ecs from "@aws-cdk/aws-ecs";
+import * as ecs_patterns from "@aws-cdk/aws-ecs-patterns";
+
+
 
 export class CdkV1V2Stack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     
-    new s3.Bucket(this, 'MyFirstBucket', {
-      versioned: true
+    const vpc = new ec2.Vpc(this, "MyVpc", {
+      maxAzs: 3 
     });
-    // The code that defines your stack goes here
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'CdkV1V2Queue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const cluster = new ecs.Cluster(this, "MyCluster", {
+      vpc: vpc
+    });
+
+    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "MyFargateService", {
+      cluster: cluster, 
+      cpu: 512, 
+      desiredCount: 6,
+      taskImageOptions: { image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample") },
+      memoryLimitMiB: 2048,
+      publicLoadBalancer: true 
+    });
   }
 }
