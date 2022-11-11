@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.159.0",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "@aws-cdk-lib/aws-s3": "1.159.0"
   }
 }
